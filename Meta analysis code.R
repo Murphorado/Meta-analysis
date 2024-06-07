@@ -1,12 +1,12 @@
 setwd("C:/Users/murph/OneDrive - University of Edinburgh/Masters/Eco Evo Responses to Climate Change/Meta-analysis")
 install.packages("metafor",dependencies=TRUE,repos="https://cloud.r-project.org")
-library(metafor)
-library(dplyr)
+library(metafor) # Metafor package contains tools for conducting a meta-analysis
+library(dplyr) 
 install.packages("weightr")
-library(weightr)
+library(weightr) # This package allows testing for publication bias
 
 install.packages("devtools")
-library(devtools)
+library(devtools) 
 
 devtools::install_github("dsquintana/metameta")
 library(metameta)
@@ -25,13 +25,16 @@ list_power <- list(power_med)
 fp <- firepower(list_power)
 fp
 
+# Import my data
+
 library(readxl)
-dataset <- read_excel("Data.xlsx")
+dataset <- read_excel("Data.xlsx") 
 View(dataset)
 par(mfrow=c(1,1))
 
+# Creating a forest plot of the effect sizes
 plot(dataset$effect_size,(1/dataset$sampling_variance),xlab="Hedge's d",ylab="Precision, (1/vd)")
-
+# Plots to highlight any publication bias
 par(mfrow=c(1,2))
 plot(dataset$effect_size,dataset$n,xlab="Hedge's d",ylab="Sample size")
 plot(dataset$effect_size,(1/dataset$sampling_variance),xlab="Hedge's d",ylab="Precision, (1/vd)")
@@ -51,15 +54,15 @@ summary(meta)
 
 meta2 <- rma(yi=effect_size, vi=sampling_variance, mods = ~ lux_difference, data=dataset)
 summary(meta2)
-
+# Testing for outliers
 inf <- influence(meta)
 print(inf)
-
+# Creating a forest plot of effect sizes
 forest(meta, cex.lab=0.8, cex.axis=0.8, addfit=TRUE, shade="zebra",order="obs")
 text(-5, 11, "Author(s), Year", pos=2, cex=0.8)
 text(5, 11, "Hedge's d [95% CI]", pos=4, cex=0.8)
 funnel(meta)
-
+# Testing the variance of different "modifiers" or "random effects"
 meta3 <- rma(yi=effect_size, vi=sampling_variance, mods = ~ species, data=dataset)
 meta3
 
@@ -86,7 +89,7 @@ wf
 
 dataset<-dataset[is.na(dataset$effect_size)==FALSE,]
 dataset$publish<-0
-#
+# Plots simulating the effects of publication bias
 dataset$publish[dataset$p_value<=0.025]<-1
 largesamplesize<-intersect(which(dataset$p_value>0.05),which(dataset$n>30))
 retainlarge<-largesamplesize[as.logical(rbinom(length(largesamplesize),prob=0.75,size=1))]
