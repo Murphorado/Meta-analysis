@@ -5,6 +5,7 @@ library(dplyr)
 install.packages("weightr")
 library(weightr) # This package allows testing for publication bias
 
+# Messing around with another package called "metameta" which allows you to conduct a power analysis of the studies used in your meta-analysis
 install.packages("devtools")
 library(devtools) 
 
